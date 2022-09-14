@@ -15,7 +15,7 @@ Additionally there are some special keys:
 | esc | stops the programm |
 | space | shows / hides annotations |
 
-## Howto build
+## How to build
 
 This project uses cmake. Only opencv is needed as dependency.
 ```
