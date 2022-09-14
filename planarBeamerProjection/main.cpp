@@ -6,16 +6,14 @@
 #include <opencv2/calib3d.hpp>
 
 
-std::map<char, cv::Mat3b> imgLib;
-char currentImageKey = '1';
-int pntIndex = 0;
+char imageKey = '1';
+int  pntIndex = 0;
 bool showAnotations = true;
 bool imageChanged = true;
 
+std::map<char, cv::Mat3b> imgLib;
 std::map<char, std::vector<cv::Point> > points;
-
 std::map<char, cv::Scalar> colors {
-    { '0', cv::Scalar(255, 255, 255) },
     { '1', cv::Scalar(255, 0, 0) },
     { '2', cv::Scalar(0, 255, 0) },
     { '3', cv::Scalar(0, 0, 255) },
@@ -28,7 +26,7 @@ std::map<char, cv::Scalar> colors {
 };
 
 bool keyIsValid(char key) {
-    return '0' <= key && key <= '9' && imgLib.find(key) != imgLib.end();
+    return '1' <= key && key <= '9' && imgLib.find(key) != imgLib.end();
 }
 
 int nearestIndex(cv::Point queryPnt, std::vector<cv::Point> const & pnts, double& maxDist) {
@@ -47,12 +45,12 @@ int nearestIndex(cv::Point queryPnt, std::vector<cv::Point> const & pnts, double
 
 void mouseCb(int event, int x, int y, int flags, void* userdata) {
     static bool dragging = false;
-    if( keyIsValid(currentImageKey) && event == cv::MouseEventTypes::EVENT_LBUTTONDOWN ) {
-        if( points[currentImageKey].size() < 4 ) {
-            points[currentImageKey].push_back(cv::Point2i(x,y));
-            if(points[currentImageKey].size() == 4) {
-                if( keyIsValid(currentImageKey+1) ) {
-                    currentImageKey++;
+    if( keyIsValid(imageKey) && event == cv::MouseEventTypes::EVENT_LBUTTONDOWN ) {
+        if( points[imageKey].size() < 4 ) {
+            points[imageKey].push_back(cv::Point2i(x,y));
+            if(points[imageKey].size() == 4) {
+                if( keyIsValid(imageKey+1) ) {
+                    imageKey++;
                     pntIndex = -1;
                     imageChanged = true;
                     return;
@@ -67,25 +65,25 @@ void mouseCb(int event, int x, int y, int flags, void* userdata) {
                 int index = nearestIndex(cv::Point2i(x,y), points[i], maxDist);
                 if( index >= 0 ) {
                     pntIndex = index;
-                    currentImageKey = i;
+                    imageKey = i;
                 }
             }
             if(pntIndex >= 0) {
-                points[currentImageKey][pntIndex] = cv::Point2i(x,y);
+                points[imageKey][pntIndex] = cv::Point2i(x,y);
             }
         }
         imageChanged = true;
         dragging = true;
     }
     if( dragging && pntIndex >= 0 ) {
-        points[currentImageKey][pntIndex] = cv::Point2i(x,y);
+        points[imageKey][pntIndex] = cv::Point2i(x,y);
         imageChanged = true;
     }
-    if( keyIsValid(currentImageKey) && event == cv::MouseEventTypes::EVENT_LBUTTONUP && pntIndex >= 0 ) {
+    if( keyIsValid(imageKey) && event == cv::MouseEventTypes::EVENT_LBUTTONUP && pntIndex >= 0 ) {
         dragging = false;
         imageChanged = true;
-        points[currentImageKey][pntIndex] = cv::Point2i(x,y);
-        if( points[currentImageKey].size() < 4 ) {
+        points[imageKey][pntIndex] = cv::Point2i(x,y);
+        if( points[imageKey].size() < 4 ) {
             pntIndex = (pntIndex + 1) % 4;
         }
     }
@@ -139,7 +137,7 @@ int main(int argc, char** argv)
     while(key != 27) { // not ESC?
         key = cv::waitKey(20);
         if( keyIsValid(key) ) {
-            currentImageKey = key;
+            imageKey = key;
             pntIndex = 0;
             imageChanged = true;
         }
@@ -150,8 +148,8 @@ int main(int argc, char** argv)
         }
 
         if(imageChanged) {
-            projectionImage = paintImage(width, height);
             imageChanged = false;
+            projectionImage = paintImage(width, height);
             cv::imshow("beamerImage", projectionImage);
         }
     }
