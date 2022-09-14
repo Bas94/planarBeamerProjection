@@ -118,7 +118,7 @@ cv::Mat3b paintImage(int width, int height) {
 int main(int argc, char** argv)
 {
     if( argc < 4 ) {
-        std::cerr << "usage: " << argv[0] << " screenWidth screenHeight image1 image2 [...]" << std::endl;
+        std::cerr << "usage: " << argv[0] << " screenWidth screenHeight image1 [image2 ...]" << std::endl;
         return -1;
     }
 
