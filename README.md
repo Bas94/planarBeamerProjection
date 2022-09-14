@@ -10,8 +10,10 @@ After starting you can click on the surface to place the corner points of all im
 After placing all images you can adjust these corners by dragging the corner with your mouse.
 
 Additionally there are some special keys:
-esc - stops the programm
-space - shows / hides annotations
+| Key | Description |
+| --- | --- |
+| esc | stops the programm |
+| space | shows / hides annotations |
 
 ## Howto build
 
